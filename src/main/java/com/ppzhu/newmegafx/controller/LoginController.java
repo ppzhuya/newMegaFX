@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -59,7 +58,7 @@ public class LoginController implements Initializable {
         }
     }
 
-    public void login(MouseEvent mouseEvent) {
+    public void login() {
         System.out.println(checkBox.isSelected());
         if (!checkBox.isSelected()) {
             new Thread(){
@@ -90,19 +89,6 @@ public class LoginController implements Initializable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
-//            new Thread(){
-//                @Override
-//                public void run() {
-//                    Runtime runtime = Runtime.getRuntime();
-//                    try {
-//                        runtime.exec("mongod --dbpath d:\\MongoDB\\Server\\7.0\\data");
-//                    } catch (IOException ex) {
-//                        Alert alert = new Alert(Alert.AlertType.ERROR);
-//                        alert.setContentText("Database service startup failure");
-//                        alert.showAndWait();
-//                    }
-//                }
-//            }.start();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("Database service startup failure!");
             alert.showAndWait();

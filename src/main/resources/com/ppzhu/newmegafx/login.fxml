@@ -35,9 +35,5 @@
          </image>
       </ImageView>
       <CheckBox fx:id="checkBox" layoutX="42.0" layoutY="273.0" mnemonicParsing="false" text="Remember me" />
-      <Label layoutX="144.0" layoutY="327.0" text="settings" underline="true" >
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Label>
    </children>
 </Pane>
