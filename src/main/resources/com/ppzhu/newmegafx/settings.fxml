@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.SettingsController">
+   <children>
+      <CheckBox fx:id="checkBox" layoutX="22.0" layoutY="23.0" mnemonicParsing="false" text="Use proxy?" />
+      <TextField fx:id="ipTextFiled" layoutX="75.0" layoutY="62.0" />
+      <Label layoutX="45.0" layoutY="66.0" text="ip :" />
+      <Label layoutX="38.0" layoutY="101.0" text="port :" />
+      <TextField fx:id="portTextField" layoutX="75.0" layoutY="97.0" />
+      <Button layoutX="110.0" layoutY="147.0" mnemonicParsing="false" onMouseClicked="#apply" text="Apply">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+   </children>
+</Pane>

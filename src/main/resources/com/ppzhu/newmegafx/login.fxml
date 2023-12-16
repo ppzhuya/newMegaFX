@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="362.0" prefWidth="333.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.LoginController">
+   <children>
+      <TextField fx:id="username" layoutX="129.0" layoutY="113.0" />
+      <Label layoutX="152.0" layoutY="38.0" text="MEGA">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Label>
+      <Label layoutX="42.0" layoutY="115.0" text="username :">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="42.0" layoutY="181.0" text="password :">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="passworld" layoutX="129.0" layoutY="179.0" />
+      <Button layoutX="209.0" layoutY="264.0" mnemonicParsing="false" onAction="#login" prefHeight="35.0" prefWidth="80.0" text="Login">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+      <ImageView fitHeight="47.0" fitWidth="46.0" layoutX="101.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@logo.png" />
+         </image>
+      </ImageView>
+      <CheckBox fx:id="checkBox" layoutX="42.0" layoutY="273.0" mnemonicParsing="false" text="Remember me" />
+      <Label layoutX="144.0" layoutY="327.0" text="settings" underline="true" >
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Label>
+   </children>
+</Pane>
