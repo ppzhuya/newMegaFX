@@ -3,6 +3,7 @@ package com.ppzhu.newmegafx.controller;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.IllegalBucketNameException;
 import com.ppzhu.newmegafx.client.MegaClient;
 import com.ppzhu.newmegafx.entry.MegaManager;
 import javafx.application.Platform;
@@ -60,6 +61,16 @@ public class CreateBucketController {
                                 bucketName.setText("");
                             }
                         });
+                    } catch (IllegalBucketNameException e){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setContentText("Illegal characters!");
+                                alert.showAndWait();
+                            }
+                        });
+
                     }
                 }
 

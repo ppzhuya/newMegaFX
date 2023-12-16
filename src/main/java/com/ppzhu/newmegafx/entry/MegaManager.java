@@ -40,9 +40,13 @@ public class MegaManager {
     }
 
     private void updateMegaClient(){
-        if (account!=null){
-            megaClient = new MegaClient(account);
+        while (true){
+            if (account!=null){
+                megaClient = new MegaClient(account);
+                break;
+            }
         }
+
     }
 
 

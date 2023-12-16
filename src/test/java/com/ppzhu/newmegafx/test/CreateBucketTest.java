@@ -13,7 +13,7 @@ public class CreateBucketTest {
         Account ppzhu = login.login("ppzhu", "123456");
         MegaClient megaClient = new MegaClient(ppzhu);
         AmazonS3 client = megaClient.getClient();
-        client.createBucket("newBucket");
+        client.createBucket("newbucket");
         client.shutdown();
     }
 }

@@ -59,7 +59,6 @@ public class LoginController implements Initializable {
     }
 
     public void login() {
-        System.out.println(checkBox.isSelected());
         if (!checkBox.isSelected()) {
             new Thread(){
                 @Override
@@ -86,6 +85,8 @@ public class LoginController implements Initializable {
 
         try {
             account = (Account) futureTask.get();
+            System.out.println(account.getAccesskey());
+            System.out.println(account.getSecretkey());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
