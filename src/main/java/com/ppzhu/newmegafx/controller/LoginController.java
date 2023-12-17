@@ -30,7 +30,7 @@ public class LoginController implements Initializable {
     private static Account account;
     private File file = new File(MegaApplication.class.getClassLoader().getResource("account.json").getFile());
 
-
+    public static Stage bucketsListStage;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (file.exists()) {
@@ -85,8 +85,6 @@ public class LoginController implements Initializable {
 
         try {
             account = (Account) futureTask.get();
-            System.out.println(account.getAccesskey());
-            System.out.println(account.getSecretkey());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -107,7 +105,9 @@ public class LoginController implements Initializable {
                             outputStream.flush();
                             outputStream.close();
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setContentText("Account Write Failure");
+                            alert.showAndWait();
                         }
                     }
                 }.start();
@@ -124,6 +124,7 @@ public class LoginController implements Initializable {
             try {
                 Pane pane = FXMLLoader.load(MegaApplication.class.getResource("bucketList.fxml"));
                 stage.setScene(new Scene(pane));
+                bucketsListStage = stage;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

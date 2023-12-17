@@ -6,7 +6,7 @@ import com.ppzhu.newmegafx.MegaApplication;
 import com.ppzhu.newmegafx.client.MegaClient;
 import com.ppzhu.newmegafx.entry.MegaBucket;
 import com.ppzhu.newmegafx.entry.MegaManager;
-import com.ppzhu.newmegafx.thread.RefreshListThread;
+import com.ppzhu.newmegafx.thread.RefreshListCall;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,9 +14,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,12 +26,15 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class BucketListController implements Initializable {
     public   TableView tableView;
     private static TableView sbuTableView;
     private static MegaClient megaClient;
     private static Stage createStage;
+    public ProgressIndicator progressIndicator;
     private MegaManager megaManager;
 
     public static TableView sbuTableView() {
@@ -38,6 +43,8 @@ public class BucketListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        progressIndicator.setVisible(true);
+        progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
         this.megaManager = MegaManager.getInstance();
         sbuTableView = tableView;
         ObservableList<MegaBucket> bucketArrayList = FXCollections.observableArrayList();
@@ -46,6 +53,8 @@ public class BucketListController implements Initializable {
             megaManager.setMegaClient(megaClient);
             AmazonS3 client = megaClient.getClient();
             List<Bucket> buckets = client.listBuckets();
+            int size = buckets.size();
+            System.out.println(size);
             bucketArrayList.clear();
             Iterator<Bucket> iterator = buckets.iterator();
             while (iterator.hasNext()) {
@@ -56,14 +65,15 @@ public class BucketListController implements Initializable {
                         next.getCreationDate()
                 );
                 bucketArrayList.add(megaBucket);
-
             }
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     tableView.setItems(bucketArrayList);
+//                    processBar.setVisible(false);
                 }
             });
+            progressIndicator.setVisible(false);
         });
         newStageThread.start();
 
@@ -77,6 +87,8 @@ public class BucketListController implements Initializable {
             Pane pane = FXMLLoader.load(MegaApplication.class.getResource("createBucketPage.fxml"));
             stage.setScene(new Scene(pane));
             stage.setTitle("create bucket");
+            stage.initOwner(LoginController.bucketsListStage);
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.getIcons().add(new Image(MegaApplication.class.getResource("logo.png").toExternalForm()));
             stage.setResizable(false);
             createStage = stage;
@@ -91,8 +103,9 @@ public class BucketListController implements Initializable {
     }
 
     public void refreshList(ActionEvent actionEvent) {
-        RefreshListThread refreshListThread =new RefreshListThread();
-        refreshListThread.start();
+        RefreshListCall listCall = new RefreshListCall(progressIndicator);
+        Thread thread = new Thread(listCall);
+        thread.start();
     }
 
     public void openBucket(ActionEvent actionEvent) {

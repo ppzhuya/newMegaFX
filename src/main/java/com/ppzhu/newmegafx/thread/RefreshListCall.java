@@ -9,21 +9,33 @@ import com.ppzhu.newmegafx.entry.MegaManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-public class RefreshListThread extends Thread{
+public class RefreshListCall implements Runnable {
+    private ProgressIndicator progressIndicator;
     private volatile TableView tableView;
     private MegaClient megaClient;
     private MegaManager megaManager = MegaManager.getInstance();
-    public RefreshListThread() {
+    public RefreshListCall(ProgressIndicator progressIndicator) {
         tableView = BucketListController.sbuTableView();
         megaClient = megaManager.getMegaClient();
+        this.progressIndicator = progressIndicator;
     }
+
+
     @Override
     public void run() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                progressIndicator.setVisible(true);
+            }
+        });
         ObservableList<MegaBucket> bucketArrayList = FXCollections.observableArrayList();
         AmazonS3 client = megaClient.getClient();
         List<Bucket> buckets = client.listBuckets();
@@ -41,6 +53,12 @@ public class RefreshListThread extends Thread{
             public void run() {
                 tableView.getItems().clear();
                 tableView.setItems(bucketArrayList);
+            }
+        });
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                progressIndicator.setVisible(false);
             }
         });
     }

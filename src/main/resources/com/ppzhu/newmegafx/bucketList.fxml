@@ -5,7 +5,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="485.0" prefWidth="878.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.BucketListController">
    <children>
-      <TableView  fx:id="tableView" layoutY="36.0" prefHeight="449.0" prefWidth="878.0">
+      <TableView fx:id="tableView" layoutY="36.0" prefHeight="449.0" prefWidth="878.0">
         <columns>
           <TableColumn prefWidth="75.0" text="Name" />
             <TableColumn prefWidth="75.0" text="createDate" />
@@ -14,9 +14,10 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Label layoutX="14.0" layoutY="11.0" text="对象存储" />
+      <Label layoutX="14.0" layoutY="11.0" text="object storage" />
       <Button layoutX="776.0" layoutY="7.0" mnemonicParsing="false" onAction="#createBucket" text="createBucket " />
       <Button layoutX="683.0" layoutY="7.0" mnemonicParsing="false" onAction="#refreshList" text="refresh List" />
-      <Button onAction="#openBucket" layoutX="583.0" layoutY="7.0" mnemonicParsing="false" text="open bucket" />
+      <Button layoutX="583.0" layoutY="7.0" mnemonicParsing="false" onAction="#openBucket" text="open bucket" />
+      <ProgressIndicator fx:id="progressIndicator" prefWidth="20" prefHeight="20" layoutX="545.0" layoutY="9.0" progress="0.0" />
    </children>
 </Pane>
