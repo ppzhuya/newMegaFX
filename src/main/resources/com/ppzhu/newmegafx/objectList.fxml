@@ -4,29 +4,31 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="442.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.ObjectListController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="442.0" prefWidth="757.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.ObjectListController">
    <children>
-      <Label layoutX="14.0" layoutY="19.0" text="Object List">
+      <Label fx:id="listName" layoutX="14.0" layoutY="19.0" text="Object List">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <ButtonBar layoutX="220.0" layoutY="9.0" prefHeight="40.0" prefWidth="366.0">
+      <ButtonBar layoutX="307.0" layoutY="8.0" prefHeight="40.0" prefWidth="366.0">
         <buttons>
-          <Button mnemonicParsing="false" text="preview" />
-            <Button mnemonicParsing="false" text="reflush" />
-            <Button mnemonicParsing="false" text="upload" />
-            <Button mnemonicParsing="false" text="download" />
+            <Button mnemonicParsing="false" text="search" />
+          <Button mnemonicParsing="false" onAction="#preview" text="preview" />
+            <Button focusTraversable="true" mnemonicParsing="false" onAction="#reflush" text="reflush" />
+            <Button mnemonicParsing="false" onAction="#upload" text="upload" />
+            <Button mnemonicParsing="false" onAction="#download" text="download" />
         </buttons>
       </ButtonBar>
-      <TableView layoutX="14.0" layoutY="49.0" prefHeight="382.0" prefWidth="572.0">
+      <TableView fx:id="tableView" layoutX="14.0" layoutY="49.0" prefHeight="382.0" prefWidth="732.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="key" />
-          <TableColumn prefWidth="75.0" text="size" />
-            <TableColumn prefWidth="75.0" text="lastModified" />
+          <TableColumn fx:id="key" prefWidth="75.0" text="key" />
+          <TableColumn fx:id="size" prefWidth="75.0" text="size" />
+            <TableColumn fx:id="lastModified" prefWidth="75.0" text="lastModified" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <TextField layoutX="151.0" layoutY="17.0" />
    </children>
 </Pane>

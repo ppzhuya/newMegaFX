@@ -28,8 +28,6 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 public class BucketListController implements Initializable {
     public   TableView tableView;
@@ -40,6 +38,7 @@ public class BucketListController implements Initializable {
     public TableColumn name;
     public TableColumn createDate;
     private MegaManager megaManager;
+    private static String bucketName;
 
     public static TableView sbuTableView() {
         return sbuTableView;
@@ -47,7 +46,8 @@ public class BucketListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        name.setStyle("-fx-alignment: CENTER;");
+        createDate.setStyle("-fx-alignment: CENTER;");
         this.name.setCellValueFactory(new PropertyValueFactory<>("name"));
         this.createDate.setCellValueFactory(new PropertyValueFactory<>("creationTime"));
         progressIndicator.setVisible(true);
@@ -116,6 +116,24 @@ public class BucketListController implements Initializable {
     }
 
     public void openBucket(ActionEvent actionEvent) {
+        MegaBucket megaBucket  = (MegaBucket) tableView.getSelectionModel().getSelectedItem();
+        bucketName = megaBucket.getName();
 
+        Stage stage = new Stage();
+        stage.getIcons().add(new Image(MegaApplication.class.getResource("logo.png").toExternalForm()));
+        stage.setTitle(bucketName);
+        try {
+            Pane pane = FXMLLoader.load(MegaApplication.class.getResource("objectList.fxml"));
+            Scene scene = new Scene(pane);
+            stage.setScene(scene);
+            stage.setResizable(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        stage.show();
+    }
+    public static String getBucketName(){
+        return bucketName;
     }
 }
