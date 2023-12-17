@@ -15,7 +15,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -35,6 +37,8 @@ public class BucketListController implements Initializable {
     private static MegaClient megaClient;
     private static Stage createStage;
     public ProgressIndicator progressIndicator;
+    public TableColumn name;
+    public TableColumn createDate;
     private MegaManager megaManager;
 
     public static TableView sbuTableView() {
@@ -43,6 +47,9 @@ public class BucketListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        this.name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        this.createDate.setCellValueFactory(new PropertyValueFactory<>("creationTime"));
         progressIndicator.setVisible(true);
         progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
         this.megaManager = MegaManager.getInstance();

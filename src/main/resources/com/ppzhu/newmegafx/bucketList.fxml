@@ -7,8 +7,8 @@
    <children>
       <TableView fx:id="tableView" layoutY="36.0" prefHeight="449.0" prefWidth="878.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="Name" />
-            <TableColumn prefWidth="75.0" text="createDate" />
+          <TableColumn fx:id="name" prefWidth="75.0" text="Name" />
+            <TableColumn fx:id="createDate" prefWidth="75.0" text="createDate" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
