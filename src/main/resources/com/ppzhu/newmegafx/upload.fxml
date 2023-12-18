@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+
+<Pane fx:controller="com.ppzhu.newmegafx.controller.UploadController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="478.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Rectangle fx:id="uploadArea" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" focusTraversable="true" height="406.0" layoutX="40.0" layoutY="21.0" stroke="BLACK" strokeType="INSIDE" width="612.0" />
+      <ProgressBar fx:id="progressBar" layoutX="40.0" layoutY="442.0" prefHeight="18.0" prefWidth="612.0" progress="0.0" />
+      <Label onMouseClicked="#upload" layoutX="219.0" layoutY="230.0" text="Click or drag and drop to upload here" underline="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Label>
+   </children>
+</Pane>
