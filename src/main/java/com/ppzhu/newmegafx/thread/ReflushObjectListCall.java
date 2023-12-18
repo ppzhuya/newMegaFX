@@ -13,6 +13,7 @@ import com.ppzhu.newmegafx.entry.ObjectList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
 
 import java.util.Collections;
@@ -24,15 +25,23 @@ public class ReflushObjectListCall implements Callable {
     private MegaManager megaManager = MegaManager.getInstance();
     private String bucketName;
     private TableView tableView;
+    private ProgressIndicator progressIndicator;
 
-    public ReflushObjectListCall(MegaManager megaManager, String bucketName,TableView tableView) {
+    public ReflushObjectListCall(MegaManager megaManager, String bucketName,TableView tableView,ProgressIndicator progressIndicator) {
         this.megaManager = megaManager;
         this.bucketName = bucketName;
         this.tableView = tableView;
+        this.progressIndicator = progressIndicator;
     }
 
     @Override
     public Object call() throws Exception {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                progressIndicator.setVisible(true);
+            }
+        });
         MegaClient megaClient = megaManager.getMegaClient();
         AmazonS3 client = megaClient.getClient();
         ObjectListing objectListing = client.listObjects(bucketName);
@@ -54,6 +63,7 @@ public class ReflushObjectListCall implements Callable {
             public void run() {
                 tableView.getItems().clear();
                 tableView.setItems(objectLists);
+                progressIndicator.setVisible(false);
             }
         });
         client.shutdown();

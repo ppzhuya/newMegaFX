@@ -14,7 +14,6 @@ import javafx.scene.control.TableView;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 public class RefreshListCall implements Runnable {
     private ProgressIndicator progressIndicator;
