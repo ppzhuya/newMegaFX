@@ -4,50 +4,58 @@ package com.ppzhu.newmegafx.thread;/*
  * @Discription
  */
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.ppzhu.newmegafx.client.MegaClient;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.client.NewMegaClient;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
 
 public class DownloadCall implements Callable {
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
     private String bucketName;
     private String keyName;
     private File file;
 
-    public DownloadCall(String bucketName, String key) {
+    public DownloadCall(String bucketName, String key,File file) {
         this.bucketName = bucketName;
         this.keyName = key;
+        this.file = file;
     }
 
     @Override
     public Object call() throws Exception {
 
-        MegaClient megaClient = megaManager.getMegaClient();
-        AmazonS3 client = megaClient.getClient();
-        S3Object object = client.getObject(bucketName, keyName);
-        System.out.println(object.getKey());
+        NewMegaClient megaClient = megaManager.getMegaClient();
 
-        S3ObjectInputStream objectContent = object.getObjectContent();
-        System.out.println(objectContent.available());
+        S3Client client = megaClient.getClient();
 
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName).key(keyName).build();
+        String sout = getObjectRequest.key();
+        System.out.println(sout);
+        ResponseBytes<GetObjectResponse> objectAsBytes = client.getObjectAsBytes(getObjectRequest);
+        byte[] bytes = objectAsBytes.asByteArray();
         FileOutputStream fileOutputStream = new FileOutputStream(file);
-
-        byte[] buffed = new byte[1024];
-        int len = 0;
-        while ((len = objectContent.read(buffed)) != -1) {
-            System.out.println(len);
-            fileOutputStream.write(buffed,0,len);
-            fileOutputStream.flush();
-        }
-        objectContent.close();
+        fileOutputStream.write(bytes);
+        fileOutputStream.flush();
         fileOutputStream.close();
-        return file;
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("download success!");
+                alert.showAndWait();
+            }
+        });
+        return "success";
 
     }
 }

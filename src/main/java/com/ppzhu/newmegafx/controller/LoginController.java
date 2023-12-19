@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ppzhu.newmegafx.MegaApplication;
 import com.ppzhu.newmegafx.entry.Account;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import com.ppzhu.newmegafx.thread.LoginCall;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -113,9 +113,8 @@ public class LoginController implements Initializable {
                 }.start();
 
             }
-
-            MegaManager instance = MegaManager.getInstance();
-            instance.setAccount(account);
+            NewMegaManager megaManager = NewMegaManager.getInstance();
+            megaManager.setAccount(account);
             /*
             新开窗口，进入系统
              */

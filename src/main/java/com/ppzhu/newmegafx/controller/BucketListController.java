@@ -1,11 +1,9 @@
 package com.ppzhu.newmegafx.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
 import com.ppzhu.newmegafx.MegaApplication;
-import com.ppzhu.newmegafx.client.MegaClient;
+import com.ppzhu.newmegafx.client.NewMegaClient;
 import com.ppzhu.newmegafx.entry.MegaBucket;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import com.ppzhu.newmegafx.thread.RefreshListCall;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -22,9 +20,14 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -32,12 +35,12 @@ import java.util.ResourceBundle;
 public class BucketListController implements Initializable {
     public   TableView tableView;
     private static TableView sbuTableView;
-    private static MegaClient megaClient;
+    private static NewMegaClient megaClient;
     private static Stage createStage;
     public ProgressIndicator progressIndicator;
     public TableColumn name;
     public TableColumn createDate;
-    private MegaManager megaManager;
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
     private static String bucketName;
     private static Stage objectListStage;
 
@@ -53,25 +56,31 @@ public class BucketListController implements Initializable {
         this.createDate.setCellValueFactory(new PropertyValueFactory<>("creationTime"));
         progressIndicator.setVisible(true);
         progressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-        this.megaManager = MegaManager.getInstance();
+        this.megaManager = NewMegaManager.getInstance();
         sbuTableView = tableView;
         ObservableList<MegaBucket> bucketArrayList = FXCollections.observableArrayList();
         Thread newStageThread = new Thread(() -> {
             megaClient =megaManager.getMegaClient();
             megaManager.setMegaClient(megaClient);
-            AmazonS3 client = megaClient.getClient();
-            List<Bucket> buckets = client.listBuckets();
+            S3Client client = megaClient.getClient();
+            ListBucketsResponse listBucketsResponse = client.listBuckets();
+            List<software.amazon.awssdk.services.s3.model.Bucket> buckets = listBucketsResponse.buckets();
+
             int size = buckets.size();
             bucketArrayList.clear();
             Iterator<Bucket> iterator = buckets.iterator();
-            while (iterator.hasNext()) {
+            while (iterator.hasNext()){
                 Bucket next = iterator.next();
+                Instant instant = next.creationDate();
+                long epochMilli = instant.toEpochMilli();
+                Date date = new Date(epochMilli);
                 MegaBucket megaBucket = new MegaBucket(
-                        next.getName(),
-                        next.getCreationDate()
+                        next.name(),
+                        date
                 );
                 bucketArrayList.add(megaBucket);
             }
+
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {

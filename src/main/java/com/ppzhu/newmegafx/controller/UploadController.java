@@ -5,20 +5,23 @@ package com.ppzhu.newmegafx.controller;
  * @Discription
  */
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.ppzhu.newmegafx.client.MegaClient;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.client.NewMegaClient;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import com.ppzhu.newmegafx.thread.UploadCall;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.*;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -28,9 +31,8 @@ public class UploadController implements Initializable {
     public ProgressBar progressBar;
     public Rectangle uploadArea;
     public TextField customizeKey;
-    public Label label;
     private String bucketName;
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
 
     public void upload(MouseEvent mouseEvent) {
         Stage uploadStage = ObjectListController.getUploadStage();
@@ -51,36 +53,23 @@ public class UploadController implements Initializable {
             System.out.println("key:" + key);
             System.out.println("ckey:" + customizeKey.getText());
 
-            MegaClient megaClient = megaManager.getMegaClient();
-            AmazonS3 client = megaClient.getClient();
+
+            NewMegaClient megaClient = megaManager.getMegaClient();
+
+            S3Client client = megaClient.getClient();
             System.out.println(bucketName);
             try {
-                if (customizeKey.getText() == null) {
-                    UploadCall uploadCall = new UploadCall(bucketName, key, megaManager, file);
-                    FutureTask futureTask = new FutureTask(uploadCall);
-                    Thread thread = new Thread(futureTask);
-                    thread.start();
-                    futureTask.get();
-                } else {
-                    UploadCall uploadCall = new UploadCall(bucketName, customizeKey.getText(), megaManager, file);
-                    FutureTask futureTask = new FutureTask(uploadCall);
-                    Thread thread = new Thread(futureTask);
-                    thread.start();
-                    futureTask.get();
-                }
-                client.shutdown();
+                UploadCall uploadCall = new UploadCall(bucketName, key, megaManager, file, uploadStage);
+                FutureTask futureTask = new FutureTask(uploadCall);
+                Thread thread = new Thread(futureTask);
+                thread.start();
+                futureTask.get();
+
+                client.close();
             } catch (ExecutionException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                throw new RuntimeException(e);
             } catch (InterruptedException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-            }catch (RuntimeException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                throw new RuntimeException(e);
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -95,6 +84,32 @@ public class UploadController implements Initializable {
         /*
         get bucketName
          */
-        label.setTooltip(new Tooltip("If you don't customize the file name, the default file name will be used, and if the default file name conflicts, the upload will fail!"));
+        uploadArea.setOnDragOver(dragEvent -> {
+            dragEvent.acceptTransferModes(TransferMode.ANY);
+        });
+        uploadArea.setOnDragEntered(dragEvent -> {
+            Dragboard dragboard = dragEvent.getDragboard();
+            if (dragboard.hasFiles()) {
+                // 设置鼠标样式
+                uploadArea.setCursor(Cursor.HAND);
+            }
+        });
+
+        uploadArea.setOnDragDropped(dragEvent -> {
+            Dragboard dragboard = dragEvent.getDragboard();
+            if (dragboard.hasFiles()) {
+                List<File> files = dragboard.getFiles();
+                for (File file :
+                        files) {
+                    System.out.println(file.getName());
+                    UploadCall uploadCall = new UploadCall(ObjectListController.getBucketName(), file.getName(), megaManager, file,ObjectListController.getUploadStage());
+                    FutureTask futureTask = new FutureTask(uploadCall);
+                    Thread thread = new Thread(futureTask);
+                    thread.start();
+                }
+
+            }
+        });
+
     }
 }

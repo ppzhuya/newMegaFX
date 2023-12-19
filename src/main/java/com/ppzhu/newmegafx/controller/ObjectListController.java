@@ -5,10 +5,11 @@ package com.ppzhu.newmegafx.controller;/*
  */
 
 import com.ppzhu.newmegafx.MegaApplication;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import com.ppzhu.newmegafx.entry.ObjectList;
 import com.ppzhu.newmegafx.thread.DownloadCall;
 import com.ppzhu.newmegafx.thread.ReflushObjectListCall;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLOutput;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 public class ObjectListController implements Initializable {
@@ -35,8 +37,8 @@ public class ObjectListController implements Initializable {
     public TableColumn size;
     public TableColumn lastModified;
     public ProgressIndicator progressIndicator;
-    private MegaManager megaManager = MegaManager.getInstance();
-    private String bucketName = BucketListController.getBucketName();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
+    private static String bucketName = BucketListController.getBucketName();
     private String downloadPath ="D:\\MegaDownload\\";
     private static Stage uploadStage;
 
@@ -48,7 +50,6 @@ public class ObjectListController implements Initializable {
         this.size.setCellValueFactory(new PropertyValueFactory<>("size"));
         this.lastModified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
         listName.setText(bucketName);
-        System.out.println(bucketName);
         ReflushObjectListCall reflushObjectListCall = new ReflushObjectListCall(megaManager,bucketName,tableView,progressIndicator);
         FutureTask futureTask = new FutureTask(reflushObjectListCall);
         Thread thread  = new Thread(futureTask);
@@ -66,7 +67,6 @@ public class ObjectListController implements Initializable {
             if (keyName.contains("/")){
                 subkeyName =keyName.substring(keyName.indexOf("/"));
             }
-            System.out.println(downloadPath+keyName);
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setInitialDirectory(new File("c:\\"));
             directoryChooser.setTitle("choose the path you want to save");
@@ -80,10 +80,11 @@ public class ObjectListController implements Initializable {
                     throw new RuntimeException(e);
                 }
             }
-            DownloadCall downloadCall = new DownloadCall(bucketName,keyName);
+            DownloadCall downloadCall = new DownloadCall(bucketName,keyName,file);
             FutureTask futureTask = new FutureTask(downloadCall);
             Thread thread = new Thread(futureTask);
             thread.start();
+
         }else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("you have not selected anything");
@@ -122,5 +123,8 @@ public class ObjectListController implements Initializable {
     }
 
     public void preview(ActionEvent actionEvent) {
+    }
+    public static String getBucketName(){
+        return bucketName;
     }
 }

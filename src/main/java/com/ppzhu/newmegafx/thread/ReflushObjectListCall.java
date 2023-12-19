@@ -4,30 +4,31 @@ package com.ppzhu.newmegafx.thread;/*
  * @Discription get object list
  */
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.ppzhu.newmegafx.client.MegaClient;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.client.NewMegaClient;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import com.ppzhu.newmegafx.entry.ObjectList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
-import java.util.Collections;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 public class ReflushObjectListCall implements Callable {
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
     private String bucketName;
     private TableView tableView;
     private ProgressIndicator progressIndicator;
 
-    public ReflushObjectListCall(MegaManager megaManager, String bucketName,TableView tableView,ProgressIndicator progressIndicator) {
+    public ReflushObjectListCall(NewMegaManager megaManager, String bucketName,TableView tableView,ProgressIndicator progressIndicator) {
         this.megaManager = megaManager;
         this.bucketName = bucketName;
         this.tableView = tableView;
@@ -42,32 +43,27 @@ public class ReflushObjectListCall implements Callable {
                 progressIndicator.setVisible(true);
             }
         });
-        MegaClient megaClient = megaManager.getMegaClient();
-        AmazonS3 client = megaClient.getClient();
+        NewMegaClient megaClient = megaManager.getMegaClient();
+        S3Client client = megaClient.getClient();
         System.out.println(bucketName);
-        ObjectListing objectListing = client.listObjects(bucketName);
+        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectsResponse listObjectsResponse = client.listObjects(listObjectsRequest);
+        List<S3Object> contents = listObjectsResponse.contents();
 
         ObservableList<ObjectList> objectLists = FXCollections.observableArrayList();
-        List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
-        for (S3ObjectSummary objectSummary : objectSummaries) {
-            String key = objectSummary.getKey();
-            long size = objectSummary.getSize();
-            Date lastModified = objectSummary.getLastModified();
-            ObjectList objectList = new ObjectList(key,size,lastModified);
+
+        for (S3Object s :
+                contents) {
+            String key = s.key();
+            Long size = s.size();
+            Instant instant = s.lastModified();
+            long epochMilli = instant.toEpochMilli();
+            Date date = new Date(epochMilli);
+            ObjectList objectList = new ObjectList(key,size,date);
             objectLists.add(objectList);
-        }
-        while (objectListing.isTruncated()) {
-            objectListing = client.listNextBatchOfObjects(objectListing);
-             objectSummaries = objectListing.getObjectSummaries();
-            for (S3ObjectSummary objectSummary : objectSummaries) {
-                String key = objectSummary.getKey();
-                long size = objectSummary.getSize();
-                System.out.println(key);
-                System.out.println("summary size:"+size);
-                Date lastModified = objectSummary.getLastModified();
-                ObjectList objectList = new ObjectList(key,size,lastModified);
-                objectLists.add(objectList);
-            }
         }
 
         Platform.runLater(new Runnable() {
@@ -78,7 +74,7 @@ public class ReflushObjectListCall implements Callable {
                 progressIndicator.setVisible(false);
             }
         });
-        client.shutdown();
+        client.close();
         return null;
     }
 }

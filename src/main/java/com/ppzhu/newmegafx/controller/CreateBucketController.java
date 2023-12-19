@@ -1,11 +1,9 @@
 package com.ppzhu.newmegafx.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.IllegalBucketNameException;
-import com.ppzhu.newmegafx.client.MegaClient;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.client.NewMegaClient;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -13,6 +11,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,9 +23,9 @@ public class CreateBucketController implements Initializable {
 
     public TextField bucketName;
     public ProgressIndicator progressIndicator;
-    private MegaClient megaClient ;
+    private NewMegaClient megaClient ;
     private Stage stage ;
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
 
     public void createBucket(ActionEvent actionEvent) {
         progressIndicator.setVisible(true);
@@ -43,17 +44,20 @@ public class CreateBucketController implements Initializable {
             String lowerCase = text.toLowerCase();
             megaClient = megaManager.getMegaClient();
 
-            AmazonS3 client = megaClient.getClient();
+            S3Client client = megaClient.getClient();
             Thread thread = new Thread(){
                 @Override
                 public void run() {
                     try {
-                        Bucket bucket = client.createBucket(lowerCase);
+                        CreateBucketRequest createBucketRequest = CreateBucketRequest.builder()
+                                .bucket(lowerCase).build();
+                        CreateBucketResponse bucket = client.createBucket(createBucketRequest);
+
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setContentText(bucket.getName()+"create success!");
+                                alert.setContentText(lowerCase+"create success!");
                                 alert.showAndWait();
                                 if (stage!=null){
                                     stage.close();

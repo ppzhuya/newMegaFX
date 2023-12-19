@@ -1,25 +1,28 @@
 package com.ppzhu.newmegafx.thread;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
-import com.ppzhu.newmegafx.client.MegaClient;
+import com.ppzhu.newmegafx.client.NewMegaClient;
 import com.ppzhu.newmegafx.controller.BucketListController;
 import com.ppzhu.newmegafx.entry.MegaBucket;
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 public class RefreshListCall implements Runnable {
     private ProgressIndicator progressIndicator;
     private volatile TableView tableView;
-    private MegaClient megaClient;
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaClient megaClient;
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
     public RefreshListCall(ProgressIndicator progressIndicator) {
         tableView = BucketListController.sbuTableView();
         megaClient = megaManager.getMegaClient();
@@ -36,15 +39,22 @@ public class RefreshListCall implements Runnable {
             }
         });
         ObservableList<MegaBucket> bucketArrayList = FXCollections.observableArrayList();
-        AmazonS3 client = megaClient.getClient();
-        List<Bucket> buckets = client.listBuckets();
+        S3Client client = megaClient.getClient();
+        ListBucketsResponse listBucketsResponse = client.listBuckets();
+        List<software.amazon.awssdk.services.s3.model.Bucket> buckets = listBucketsResponse.buckets();
+
         Iterator<Bucket> iterator = buckets.iterator();
         while (iterator.hasNext()){
             Bucket next = iterator.next();
+            Instant instant = next.creationDate();
+            long epochMilli = instant.toEpochMilli();
+            Date date = new Date(epochMilli);
+
             MegaBucket megaBucket = new MegaBucket(
-                    next.getName(),
-                    next.getCreationDate()
+                    next.name(),
+                    date
             );
+
             bucketArrayList.add(megaBucket);
         }
         Platform.runLater(new Runnable() {

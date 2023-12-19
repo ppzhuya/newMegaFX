@@ -1,6 +1,6 @@
 package com.ppzhu.newmegafx;
 
-import com.ppzhu.newmegafx.entry.MegaManager;
+import com.ppzhu.newmegafx.entry.NewMegaManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MegaApplication extends Application {
-    private MegaManager megaManager = MegaManager.getInstance();
+    private NewMegaManager megaManager = NewMegaManager.getInstance();
     public static Stage primarystage;
     @Override
     public void start(Stage stage) throws IOException {

@@ -6,11 +6,10 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.UploadController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="691.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ppzhu.newmegafx.controller.UploadController">
    <children>
-      <Rectangle fx:id="uploadArea" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" focusTraversable="true" height="406.0" layoutX="40.0" layoutY="58.0" stroke="BLACK" strokeType="INSIDE" width="612.0" />
-      <ProgressBar fx:id="progressBar" layoutX="40.0" layoutY="474.0" prefHeight="18.0" prefWidth="612.0" progress="0.0" />
-      <Label layoutX="218.0" layoutY="252.0" onMouseClicked="#upload" text="Click or drag and drop to upload here" underline="true">
+      <Rectangle fx:id="uploadArea" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" focusTraversable="true" height="406.0" layoutX="39.0" layoutY="35.0" stroke="BLACK" strokeType="INSIDE" width="612.0" />
+      <Label layoutX="218.0" layoutY="229.0" onMouseClicked="#upload" text="Click or drag and drop to upload here" underline="true">
          <font>
             <Font size="14.0" />
          </font>
@@ -18,7 +17,5 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Label>
-      <TextField fx:id="customizeKey" layoutX="40.0" layoutY="21.0" prefHeight="23.0" prefWidth="211.0" />
-      <Label fx:id="label" layoutX="271.0" layoutY="25.0" text="Customize the name of the uploaded file" textFill="RED" />
    </children>
 </Pane>
