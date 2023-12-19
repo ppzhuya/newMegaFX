@@ -32,6 +32,7 @@ public class DownloadCall implements Callable {
         AmazonS3 client = megaClient.getClient();
         S3Object object = client.getObject(bucketName, keyName);
         System.out.println(object.getKey());
+
         S3ObjectInputStream objectContent = object.getObjectContent();
         System.out.println(objectContent.available());
 

@@ -44,14 +44,26 @@ public class ReflushObjectListCall implements Callable {
         });
         MegaClient megaClient = megaManager.getMegaClient();
         AmazonS3 client = megaClient.getClient();
+        System.out.println(bucketName);
         ObjectListing objectListing = client.listObjects(bucketName);
+
         ObservableList<ObjectList> objectLists = FXCollections.observableArrayList();
+        List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+        for (S3ObjectSummary objectSummary : objectSummaries) {
+            String key = objectSummary.getKey();
+            long size = objectSummary.getSize();
+            Date lastModified = objectSummary.getLastModified();
+            ObjectList objectList = new ObjectList(key,size,lastModified);
+            objectLists.add(objectList);
+        }
         while (objectListing.isTruncated()) {
             objectListing = client.listNextBatchOfObjects(objectListing);
-            List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+             objectSummaries = objectListing.getObjectSummaries();
             for (S3ObjectSummary objectSummary : objectSummaries) {
                 String key = objectSummary.getKey();
                 long size = objectSummary.getSize();
+                System.out.println(key);
+                System.out.println("summary size:"+size);
                 Date lastModified = objectSummary.getLastModified();
                 ObjectList objectList = new ObjectList(key,size,lastModified);
                 objectLists.add(objectList);

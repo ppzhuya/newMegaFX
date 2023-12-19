@@ -123,6 +123,7 @@ public class LoginController implements Initializable {
             stage.setTitle("bucket list");
             try {
                 Pane pane = FXMLLoader.load(MegaApplication.class.getResource("bucketList.fxml"));
+
                 stage.setScene(new Scene(pane));
                 bucketsListStage = stage;
             } catch (IOException e) {

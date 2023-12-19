@@ -39,6 +39,7 @@ public class BucketListController implements Initializable {
     public TableColumn createDate;
     private MegaManager megaManager;
     private static String bucketName;
+    private static Stage objectListStage;
 
     public static TableView sbuTableView() {
         return sbuTableView;
@@ -61,12 +62,10 @@ public class BucketListController implements Initializable {
             AmazonS3 client = megaClient.getClient();
             List<Bucket> buckets = client.listBuckets();
             int size = buckets.size();
-            System.out.println(size);
             bucketArrayList.clear();
             Iterator<Bucket> iterator = buckets.iterator();
             while (iterator.hasNext()) {
                 Bucket next = iterator.next();
-                System.out.println(next.getName());
                 MegaBucket megaBucket = new MegaBucket(
                         next.getName(),
                         next.getCreationDate()
@@ -126,7 +125,11 @@ public class BucketListController implements Initializable {
             Pane pane = FXMLLoader.load(MegaApplication.class.getResource("objectList.fxml"));
             Scene scene = new Scene(pane);
             stage.setScene(scene);
+            stage.initOwner(LoginController.bucketsListStage);
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.setResizable(false);
+            objectListStage=stage;
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -135,5 +138,8 @@ public class BucketListController implements Initializable {
     }
     public static String getBucketName(){
         return bucketName;
+    }
+    public static Stage getObjectListStage(){
+        return objectListStage;
     }
 }
